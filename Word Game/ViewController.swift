@@ -20,6 +20,8 @@ class ViewController: UIViewController {
     
     var activatedButtons = [UIButton]()
     var solutions = [String]()
+    var wordsguessed = 0
+    
     
     var score = 0 {
         didSet {
@@ -80,6 +82,8 @@ class ViewController: UIViewController {
         
         let buttonsView = UIView()
         buttonsView.translatesAutoresizingMaskIntoConstraints = false
+        buttonsView.layer.borderWidth = 10
+        buttonsView.layer.borderColor = UIColor.gray.cgColor
         view.addSubview(buttonsView)
         
         
@@ -150,20 +154,32 @@ class ViewController: UIViewController {
     }
     
     @objc func submitTapped(_ sender: UIButton) {
-        for solution in solutions {
-            if currentAnswer.text == solution {
-                activatedButtons.removeAll()
-                if let index = solutions.firstIndex(of: solution) {
-                var solutionsarray = answersLabel.text!.components(separatedBy: "\n")
-                    solutionsarray[index] = solution
-                    answersLabel.text = solutionsarray.joined(separator: "\n")
-                }
+        
+            guard let answerText = currentAnswer.text else {return}
+            guard let index = solutions.firstIndex(of: answerText) else {
+                let mistakeAlert = UIAlertController(title: "You are wrong!", message:"Try again", preferredStyle: .alert)
+                mistakeAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                    for button in self.activatedButtons {
+                        button.isHidden = false
+                    }
+                    self.activatedButtons.removeAll()
+                    self.currentAnswer.text = ""
+                    self.score -= 1
+                }))
+                present(mistakeAlert, animated: true, completion: nil)
+                return
+                
             }
-        }
+                
+            var solutionsarray = answersLabel.text!.components(separatedBy: "\n")
+            solutionsarray[index] = answerText
+            answersLabel.text = solutionsarray.joined(separator: "\n")
+        activatedButtons.removeAll()
         currentAnswer.text = ""
         score += 1
+        wordsguessed += 1
         
-        if score % 7 == 0 {
+        if wordsguessed % 7 == 0 {
             let ac = UIAlertController(title: "Well done!", message: "Are you ready for the next level?", preferredStyle: .alert)
             ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: levelUp))
             present(ac, animated: true)
