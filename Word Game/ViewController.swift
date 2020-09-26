@@ -15,34 +15,48 @@ class ViewController: UIViewController {
     var scoreLabel: UILabel!
     var letterButtons = [UIButton]()
     
+    var labels = [UILabel]()
+    var textsForLabels = ["Score: 0", "CLUES", "ANSWERS"]
+    
+    var activatedButtons = [UIButton]()
+    var solutions = [String]()
+    
+    var score = 0 {
+        didSet {
+            scoreLabel.text = "Score: \(score)"
+        }
+    }
+    var level = 1 {
+        didSet {
+            loadlevel()
+        }
+    }
+    
     override func loadView() {
         view = UIView()
         view.backgroundColor = .white
         
         scoreLabel = UILabel()
-        scoreLabel.translatesAutoresizingMaskIntoConstraints = false
-        scoreLabel.textAlignment = .right
-        scoreLabel.text = "Score: 0"
-        view.addSubview(scoreLabel)
-        
         cluesLabel = UILabel()
-        cluesLabel.translatesAutoresizingMaskIntoConstraints = false
-        cluesLabel.font = UIFont.systemFont(ofSize: 24)
-        cluesLabel.text = "CLUES"
-        cluesLabel.numberOfLines = 0
-        view.addSubview(cluesLabel)
-        
-        cluesLabel.setContentHuggingPriority(UILayoutPriority(1), for: .vertical)
-
         answersLabel = UILabel()
-        answersLabel.translatesAutoresizingMaskIntoConstraints = false
-        answersLabel.font = UIFont.systemFont(ofSize: 24)
-        answersLabel.text = "ANSWERS"
-        answersLabel.numberOfLines = 0
-        answersLabel.textAlignment = .right
-        view.addSubview(answersLabel)
         
-        answersLabel.setContentHuggingPriority(UILayoutPriority(1), for: .vertical)
+        labels += [scoreLabel, cluesLabel, answersLabel]
+        
+        for label in labels {
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.text = textsForLabels[labels.firstIndex(of: label)!]
+            label.font = UIFont.systemFont(ofSize: 16)
+            if label != scoreLabel {
+                label.font = UIFont.systemFont(ofSize: 24)
+                label.numberOfLines = 0
+                label.setContentHuggingPriority(UILayoutPriority(1), for: .vertical)
+            }
+            if label != cluesLabel {
+                label.textAlignment = .right
+            }
+            view.addSubview(label)
+        }
+  
         
         currentAnswer = UITextField()
         currentAnswer.translatesAutoresizingMaskIntoConstraints = false
@@ -55,11 +69,13 @@ class ViewController: UIViewController {
         let submit = UIButton(type: .system)
         submit.translatesAutoresizingMaskIntoConstraints = false
         submit.setTitle("SUBMIT", for: .normal)
+        submit.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
         view.addSubview(submit)
 
         let clear = UIButton(type: .system)
         clear.translatesAutoresizingMaskIntoConstraints = false
         clear.setTitle("CLEAR", for: .normal)
+        clear.addTarget(self, action: #selector(clearTapped), for: .touchUpInside)
         view.addSubview(clear)
         
         let buttonsView = UIView()
@@ -112,7 +128,7 @@ class ViewController: UIViewController {
                 
                 let frame = CGRect(x: column * width, y: row * height, width: width, height: height)
                 letterbutton.frame = frame
-                
+                letterbutton.addTarget(self, action: #selector(letterTapped), for: .touchUpInside)
                 buttonsView.addSubview(letterbutton)
                 letterButtons.append(letterbutton)
                 
@@ -122,8 +138,96 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        loadlevel()
     }
-
+    
+    @objc func letterTapped(_ sender: UIButton) {
+        guard let buttonTitle = sender.titleLabel?.text else {return}
+        currentAnswer.text = currentAnswer.text?.appending(buttonTitle)
+        activatedButtons.append(sender)
+        sender.isHidden = true
+    }
+    
+    @objc func submitTapped(_ sender: UIButton) {
+        for solution in solutions {
+            if currentAnswer.text == solution {
+                activatedButtons.removeAll()
+                if let index = solutions.firstIndex(of: solution) {
+                var solutionsarray = answersLabel.text!.components(separatedBy: "\n")
+                    solutionsarray[index] = solution
+                    answersLabel.text = solutionsarray.joined(separator: "\n")
+                }
+            }
+        }
+        currentAnswer.text = ""
+        score += 1
+        
+        if score % 7 == 0 {
+            let ac = UIAlertController(title: "Well done!", message: "Are you ready for the next level?", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: levelUp))
+            present(ac, animated: true)
+        }
+    }
+    
+    @objc func clearTapped(_ sender: UIButton) {
+        currentAnswer.text?.removeAll()
+        for button in activatedButtons {
+            button.isHidden = false
+        }
+        activatedButtons.removeAll()
+        
+    }
+    
+    func loadlevel(){
+        var cluestring = ""
+        var solutionString = ""
+        var letterBits = [String]()
+        
+        if let levelFileURL = Bundle.main.url(forResource: "level\(level)", withExtension: ".txt") {
+            if let levelContents = try? String(contentsOf: levelFileURL) {
+                var lines = levelContents.components(separatedBy: "\n")
+                lines.shuffle()
+                
+                for (index, line) in lines.enumerated() {
+                    let parts = line.components(separatedBy: ": ")
+                    let answer = parts[0]
+                    let clue = parts[1]
+                    
+                    cluestring += "\(index + 1). \(clue)\n"
+                    
+                    let solutionWord = answer.replacingOccurrences(of: "|", with: "")
+                    solutionString += "\(solutionWord.count) letters.\n"
+                    solutions.append(solutionWord)
+                    
+                    let bits = answer.components(separatedBy: "|")
+                    letterBits += bits
+                }
+            }
+        }
+        
+        cluesLabel.text = cluestring.trimmingCharacters(in: .whitespacesAndNewlines)
+        answersLabel.text = solutionString.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        letterBits.shuffle()
+        
+        if letterBits.count == letterButtons.count {
+            for i in 0..<letterButtons.count {
+                letterButtons[i].setTitle(letterBits[i], for: .normal)
+            }
+        }
+    }
+    func levelUp(_ action: UIAlertAction){
+        solutions.removeAll()
+        for btn in letterButtons {
+            btn.isHidden = false
+        }
+        if level == 1 {
+            level += 1
+        } else {
+            level = 1
+        }
+    }
 
 }
 

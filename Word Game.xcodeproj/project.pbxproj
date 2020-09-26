@@ -13,6 +13,8 @@
 		BC5D7EF1251F562300C6BA84 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC5D7EEF251F562300C6BA84 /* Main.storyboard */; };
 		BC5D7EF3251F562500C6BA84 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC5D7EF2251F562500C6BA84 /* Assets.xcassets */; };
 		BC5D7EF6251F562500C6BA84 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC5D7EF4251F562500C6BA84 /* LaunchScreen.storyboard */; };
+		BC5D7F00251FD85A00C6BA84 /* level1.txt in Resources */ = {isa = PBXBuildFile; fileRef = BC5D7EFF251FD85900C6BA84 /* level1.txt */; };
+		BC5D7F03251FD86300C6BA84 /* level2.txt in Resources */ = {isa = PBXBuildFile; fileRef = BC5D7F02251FD86300C6BA84 /* level2.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		BC5D7EF2251F562500C6BA84 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BC5D7EF5251F562500C6BA84 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BC5D7EF7251F562500C6BA84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BC5D7EFF251FD85900C6BA84 /* level1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = level1.txt; sourceTree = "<group>"; };
+		BC5D7F02251FD86300C6BA84 /* level2.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = level2.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +66,8 @@
 				BC5D7EEF251F562300C6BA84 /* Main.storyboard */,
 				BC5D7EF2251F562500C6BA84 /* Assets.xcassets */,
 				BC5D7EF4251F562500C6BA84 /* LaunchScreen.storyboard */,
+				BC5D7EFF251FD85900C6BA84 /* level1.txt */,
+				BC5D7F02251FD86300C6BA84 /* level2.txt */,
 				BC5D7EF7251F562500C6BA84 /* Info.plist */,
 			);
 			path = "Word Game";
@@ -124,7 +130,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC5D7F03251FD86300C6BA84 /* level2.txt in Resources */,
 				BC5D7EF6251F562500C6BA84 /* LaunchScreen.storyboard in Resources */,
+				BC5D7F00251FD85A00C6BA84 /* level1.txt in Resources */,
 				BC5D7EF3251F562500C6BA84 /* Assets.xcassets in Resources */,
 				BC5D7EF1251F562300C6BA84 /* Main.storyboard in Resources */,
 			);
