@@ -199,8 +199,9 @@ class ViewController: UIViewController {
         var cluestring = ""
         var solutionString = ""
         var letterBits = [String]()
-        
-        if let levelFileURL = Bundle.main.url(forResource: "level\(level)", withExtension: ".txt") {
+         
+        DispatchQueue.global().async {
+            if let levelFileURL = Bundle.main.url(forResource: "level\(self.level)", withExtension: ".txt") {
             if let levelContents = try? String(contentsOf: levelFileURL) {
                 var lines = levelContents.components(separatedBy: "\n")
                 lines.shuffle()
@@ -214,7 +215,7 @@ class ViewController: UIViewController {
                     
                     let solutionWord = answer.replacingOccurrences(of: "|", with: "")
                     solutionString += "\(solutionWord.count) letters.\n"
-                    solutions.append(solutionWord)
+                    self.solutions.append(solutionWord)
                     
                     let bits = answer.components(separatedBy: "|")
                     letterBits += bits
@@ -222,16 +223,20 @@ class ViewController: UIViewController {
             }
         }
         
-        cluesLabel.text = cluestring.trimmingCharacters(in: .whitespacesAndNewlines)
-        answersLabel.text = solutionString.trimmingCharacters(in: .whitespacesAndNewlines)
+            DispatchQueue.main.async {
+            
+            self.cluesLabel.text = cluestring.trimmingCharacters(in: .whitespacesAndNewlines)
+            self.answersLabel.text = solutionString.trimmingCharacters(in: .whitespacesAndNewlines)
         
         letterBits.shuffle()
         
-        if letterBits.count == letterButtons.count {
-            for i in 0..<letterButtons.count {
-                letterButtons[i].setTitle(letterBits[i], for: .normal)
+            if letterBits.count == self.letterButtons.count {
+                for i in 0..<self.letterButtons.count {
+                self.letterButtons[i].setTitle(letterBits[i], for: .normal)
             }
         }
+            }
+    }
     }
     func levelUp(_ action: UIAlertAction){
         solutions.removeAll()
